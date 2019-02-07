@@ -8,11 +8,7 @@ app = Flask('S3 access log monitor')
 
 @app.route('/')
 def main():
-    logs = listup()
-    if not logs:
-        return 'Empty'
-    html = '<br>'.join(logs)
-    return html
+    return listup()
 
 @app.route('/test/')
 def about():
