@@ -1,5 +1,7 @@
-from collections import namedtuple
 import csv
+from collections import namedtuple
+from glob import glob
+
 
 columns = 'owner bucket time remote_ip requester request_id operation key request_url http_status error_code bytes_sent object_size total_time turnaround_time referrer user_agent version_id'
 class Log(namedtuple('Log', columns)):
@@ -7,6 +9,36 @@ class Log(namedtuple('Log', columns)):
         cols = ['  {} : {}'.format(key, value) for key, value in self._asdict().items()]
         strf = 'Log(\n{}\n)'.format('\n'.join(cols))
         return strf
+
+
+class LogStream:
+    """
+    Arguments
+    ---------
+    directory : str
+        Directory the logs are stored
+    prefix : str
+        Logfile prefix
+
+    Usage
+    -----
+        >>> log_stream = LogStream(dirname, prefix)
+        >>> for log in log_stream:
+        >>>     # do something
+
+    """
+    def __init__(self, directory, prefix):
+        self.prefix = prefix
+        paths = sorted(glob('{}/*'.format(directory)))
+        paths = [p for p in paths if p.split('/')[-1].find(prefix) == 0]
+        self.paths = paths
+
+    def __iter__(self):
+        for path in self.paths:
+            with open(path, encoding='utf-8') as f:
+                for doc in f:
+                    yield parse(doc)
+
 
 def parse(line):
     """
