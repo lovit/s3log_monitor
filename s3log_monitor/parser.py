@@ -57,4 +57,10 @@ def parse(line):
     """
 
     line_ = line.replace('[', '"', 1).replace(']', '"', 1)
-    return Log(*next(csv.reader([line_], delimiter=' ')))
+    cols = next(csv.reader([line_], delimiter=' '))
+    for idx in [11, 12, 13, 14]:
+        try:
+            cols[idx] = int(cols[idx])
+        except:
+            continue
+    return Log(*cols)
