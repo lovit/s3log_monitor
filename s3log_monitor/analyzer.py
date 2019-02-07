@@ -1,9 +1,15 @@
+from config import bucket
 from config import directory
 from config import prefix
 from config import ignore_ips
 from parser import LogStream
+import os
 
 def listup():
+
+    command = 'aws s3 sync s3://{}/ {}'.format(bucket, directory)
+    os.system(command)
+
     log_stream = LogStream(directory, prefix)
     logs_str = []
     for log in log_stream:
