@@ -18,6 +18,19 @@ def datetime_parse(dt):
     dt += timedelta(hours=9)
     return dt
 
+def byte_format(size):
+    if size == '-':
+        return size
+    unit = 'Byte'
+    if size > 1024:
+        size /= 1024
+        unit = 'KB'
+    if size > 1024:
+        size /= 1024
+        unit = 'MB'
+    size = int(size)
+    return '{} {}'.format(size, unit)
+
 def listup():
     command = 'aws s3 sync s3://{}/ {}'.format(bucket, directory)
     os.system(command)
@@ -27,7 +40,11 @@ def listup():
     for log in log_stream:
         if log.remote_ip in ignore_ips:
             continue
-        cols = (datetime_parse(log.time.split()[0]), log.remote_ip, log.request_url.split('?')[0], log.bytes_sent)
+        cols = (datetime_parse(log.time.split()[0]),
+                log.remote_ip,
+                log.request_url.split('?')[0],
+                byte_format(log.bytes_sent)
+               )
         logs.append(cols)
     logs = sorted(logs, key=lambda x:x[0], reverse=True)
 
