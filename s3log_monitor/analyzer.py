@@ -31,7 +31,7 @@ def byte_format(size):
     size = int(size)
     return '{} {}'.format(size, unit)
 
-def listup():
+def listup(min_byte=2048):
     command = 'aws s3 sync s3://{}/ {}'.format(bucket, directory)
     os.system(command)
 
@@ -39,6 +39,8 @@ def listup():
     logs = []
     for log in log_stream:
         if log.remote_ip in ignore_ips:
+            continue
+        if isinstance(log.bytes_sent, str) or log.bytes_sent < min_byte:
             continue
         cols = (datetime_parse(log.time.split()[0]),
                 log.remote_ip,
