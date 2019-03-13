@@ -35,10 +35,17 @@ class LogStream:
 
     def __iter__(self):
         for path in self.paths:
+            print('file: {}'.format(path))
             with open(path, encoding='utf-8') as f:
-                for doc in f:
-                    yield parse(doc)
-
+                for i, doc in enumerate(f):
+                    try:
+                        log = parse(doc)
+                        yield log
+                    except Exception as e:
+                        print(e)
+                        print('{}, {} line'.format(path, i))
+                        print(doc)
+                        continue
 
 def parse(line):
     """
@@ -63,4 +70,6 @@ def parse(line):
             cols[idx] = int(cols[idx])
         except:
             continue
+    # TODO: log format has changed
+    cols = cols[:18]
     return Log(*cols)
